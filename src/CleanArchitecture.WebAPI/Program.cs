@@ -1,13 +1,20 @@
-using CleanArchitecture.Application;
-using CleanArchitecture.Domain.Entities;
-using CleanArchitecture.Infrastructure;
-
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddApplication();
-builder.Services.AddInfrastructure(builder.Configuration);
-builder.Services.AddAuthentication().AddBearerToken();
+//builder.Services.AddCors(cfr =>
+//{
+//    cfr.AddDefaultPolicy(plc =>
+//    {
+//        plc.AllowAnyMethod();
+//        plc.AllowAnyHeader();
+//        plc.AllowAnyOrigin();
+//        plc.WithOrigins();
+//    });
+//});
 
+//builder.Services.AddApplication();
+//builder.Services.AddInfrastructure(builder.Configuration);
+
+builder.Services.AddAuthorization();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -20,12 +27,11 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseCors();
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
 app.MapControllers();
-
-app.MapIdentityApi<AppUser>();
 
 app.Run();

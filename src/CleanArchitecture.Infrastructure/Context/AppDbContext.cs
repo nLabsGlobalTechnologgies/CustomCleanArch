@@ -16,8 +16,9 @@ internal class AppDbContext : IdentityDbContext<AppUser, AppRole, Guid>
         builder.Ignore<IdentityRoleClaim<Guid>>();
         //builder.Ignore<IdentityUserClaim<Guid>>();
         builder.Ignore<IdentityUserToken<Guid>>();
-        builder.Ignore<IdentityUserRole<Guid>>();
+        //builder.Ignore<IdentityUserRole<Guid>>();
 
         builder.Entity<IdentityUserClaim<Guid>>().ToTable("UserClaims");
+        builder.Entity<IdentityUserRole<Guid>>().ToTable("UserRoles").HasKey(x => new { x.UserId, x.RoleId });
     }
 }

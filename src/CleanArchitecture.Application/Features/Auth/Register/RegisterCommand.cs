@@ -1,11 +1,11 @@
 ﻿using MediatR;
 using TS.Result;
-
 namespace CleanArchitecture.Application.Features.Auth.Register;
 public sealed record RegisterCommand(
     string FirstName,
     string LastName,
     string Email,
     string UserName,
-    string Password
+    string Password,
+    string RePassword
 ) : IRequest<Result<string>>;
