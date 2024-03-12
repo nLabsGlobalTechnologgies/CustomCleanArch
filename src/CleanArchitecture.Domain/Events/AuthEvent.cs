@@ -1,44 +1,28 @@
-﻿using FluentEmail.Core;
-using System.Net;
-using System.Net.Mail;
-using TS.Result;
+﻿using CleanArchitecture.Domain.Entities;
+using FluentEmail.Core;
+using MediatR;
 
-namespace CleanArchitecture.Application.Services;
-
-public static class EmailService
+namespace CleanArchitecture.Domain.Events;
+public sealed class AuthEvent : INotification
 {
-    //My SendEmailCode
-    public static async Task<Result<string>> SendEmailAsync(string fromEmail, string toEmail, string toEmailConfirmCode, string subject, CancellationToken cancellationToken)
-    {
-        using (MailMessage mail = new MailMessage())
-        {
-            mail.From = new MailAddress(fromEmail);
-            mail.To.Add(toEmail);
-            mail.Subject = subject;
-            mail.Body = EmailBody(toEmailConfirmCode);
-            mail.IsBodyHtml = true;
-            using (SmtpClient smtp = new SmtpClient("localhost", 2525))
-            {
-                smtp.UseDefaultCredentials = false;
-                smtp.Credentials = new NetworkCredential("", "");
-                smtp.EnableSsl = false;
-                //smtp.Port = 25;
-                await smtp.SendMailAsync(mail);
-            }
-        }
+    public readonly AppUser _user;
 
-        return Result<string>.Succeed("Email başarıyla gönderildi");
+    public AuthEvent(AppUser user)
+    {
+        _user = user;
     }
+}
 
-    //FluentEmail SendEmailCode
-    public static async Task<Result<string>> SendFluentEmailAsync(IFluentEmail fluentEmail, string toEmail, string toEmailConfirmCode, string subject, CancellationToken cancellationToken)
+
+public sealed class SendConfirmEmailDomainEvent(IFluentEmail fluentEmail) : INotificationHandler<AuthEvent>
+{
+    public async Task Handle(AuthEvent notification, CancellationToken cancellationToken)
     {
-        var _body = EmailService.EmailBody(toEmailConfirmCode);
-        var _subject = subject;
-
-        await fluentEmail.To(toEmail).Subject(_subject).Body(_body).SendAsync(cancellationToken);
-
-        return Result<string>.Succeed("Email başarıyla gönderildi");
+        var response = await fluentEmail
+            .To(notification._user.Email)
+            .Subject("Verify Your Email")
+            .Body(EmailBody(notification._user.EmailConfirmCode.ToString() ?? ""))
+            .SendAsync(cancellationToken);
     }
 
     public static string EmailBody(string emailConfirmCode)

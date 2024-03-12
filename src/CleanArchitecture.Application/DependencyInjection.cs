@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using CleanArchitecture.Application.Options;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 
 namespace CleanArchitecture.Application;
 public static class DependencyInjection
@@ -10,8 +12,13 @@ public static class DependencyInjection
             configuration.RegisterServicesFromAssemblies(typeof(DependencyInjection).Assembly);
         });
 
-        services.AddFluentEmail("admin@test.com").AddSmtpSender("localhost", 2525);
+        var emailOptions = services.BuildServiceProvider().GetRequiredService<IOptions<EmailOptions>>().Value;
 
+        services.
+            AddFluentEmail(emailOptions.Email)
+            .AddSmtpSender(emailOptions.SMTP, emailOptions.PORT);
+            
+            
         return services;
     }
 }

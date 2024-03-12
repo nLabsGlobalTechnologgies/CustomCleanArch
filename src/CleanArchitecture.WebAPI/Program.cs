@@ -1,18 +1,8 @@
+using CleanArchitecture.Presentation;
+
 var builder = WebApplication.CreateBuilder(args);
 
-//builder.Services.AddCors(cfr =>
-//{
-//    cfr.AddDefaultPolicy(plc =>
-//    {
-//        plc.AllowAnyMethod();
-//        plc.AllowAnyHeader();
-//        plc.AllowAnyOrigin();
-//        plc.WithOrigins();
-//    });
-//});
-
-//builder.Services.AddApplication();
-//builder.Services.AddInfrastructure(builder.Configuration);
+builder.Services.AddPresentation(builder.Configuration);
 
 builder.Services.AddAuthorization();
 builder.Services.AddControllers();
